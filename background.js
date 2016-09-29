@@ -1,73 +1,41 @@
 
-var urlPatterns;
-var authUrl;
-var userName;
-var password;
-var token;
-var fixedToken;
-
-function fetchToken() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', authUrl, true, userName, password);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-            token = xhr.responseText.replace("\n", "");
-        }
-    }
-    xhr.send(null);
-}
+var urlPattern;
+var authToken;
 
 function init() {
     chrome.storage.sync.get({
         url: '<unknown>',
-        username: '<unknown>',
-        password: '<unknown>',
-        authURL: '<unknown>'
-
+        token: '<unknown>'
     }, function(items) {
-        urlPatterns = items.url;
-        userName = items.username;
-        authUrl = items.authURL;
-        password = items.password;
-        fetchToken();
+        urlPattern = items.url;
+        authToken = items.token;
     });
 }
 
-function updateSetting (url_pattern, user_name, auth_url, pass_word) {
-    urlPatterns = url_pattern;
-    authUrl = auth_url;
-    userName = user_name;
-    password = pass_word;
-    fetchToken();
+function updateSetting (url, token) {
+    urlPattern = url;
+    authToken = token;
 }
 
 
 chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
-    if (token && urlPatterns) {
-        var urlPatternsArray =  urlPatterns.split("\n")
+    if (authToken && urlPattern) {
         var match = false;
-        for (i = 0; i < urlPatternsArray.length; i++) {
-            if (details.url.startsWith(urlPatternsArray[i])) {
-                match = true;
-                break;
-            }
-        }
-        if (match) {
-            console.log("Setting Authorization Header.");
-            details.requestHeaders.push({name:"Authorization",value:"Bearer " + token});
+        if (details.url.startsWith(urlPattern)) {
+            console.log("Setting Authorization Header on request to " + details.url);
+            details.requestHeaders.push({
+                name: "Authorization",
+                value: "Bearer " + authToken
+            });
         }
     }
     return {requestHeaders: details.requestHeaders};
-},
-{"urls":["*://*/*"]},
-["requestHeaders", "blocking"]);
-
-chrome.alarms.onAlarm.addListener(function(alarm){
-    fetchToken();
-});
+},{
+    "urls": ["*://*/*"]
+},[
+    "requestHeaders",
+    "blocking"
+]);
 
 init()
-
-chrome.alarms.create("refresh_token", {periodInMinutes:40});
-
 

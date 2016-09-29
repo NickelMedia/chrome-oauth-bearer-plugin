@@ -1,8 +1,8 @@
 {
-  "name": "Zalando Chrome OAuth Bearer Plugin",
-  "version": "0.7",
-  "manifest_version": 2,
-  "description": "Fetches periodically a new token from your configured Auth URL and passes it via the Authorization Header to configured URLs. Everything can be configured by the options page of this Chrome extension.",
+  "name": "Kubernetes Chrome Token Plugin",
+  "version": "0.8",
+  "manifest_version": 3,
+  "description": "Adds a given token to the appropriate header for all requests to a given url/domain",
   "icons": { "128": "auth.png" },
   "permissions": ["storage", "webRequest", "*://*/*", "background", "webRequestBlocking", "alarms"],
   "background": {
