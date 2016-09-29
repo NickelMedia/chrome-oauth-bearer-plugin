@@ -1,5 +1,7 @@
 # Kubernetes Chrome Token Plugin
 
+**WARNING, THIS PROBABLY OPENS YOU TO BEARER TOKEN CSRF REQUESTS** (thanks @liggitt)
+
 Chrome browser plugin to inject OAuth 2 bearer tokens into outgoing HTTP requests (``Authorization`` header).
 
 This plugin should allow using the kubernetes apiserver proxy when utilizing tokken auth.
